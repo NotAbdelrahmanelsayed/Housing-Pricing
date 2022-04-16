@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[12]:
+# In[108]:
 
 
 import os
@@ -13,7 +13,7 @@ import tarfile
 
 # **defining the data's place**
 
-# In[13]:
+# In[109]:
 
 
 
@@ -31,14 +31,14 @@ def fetch_housing_data(housing_url=HOUSING_URL, housing_path=HOUSING_PATH):
     housing_tgz.close()
 
 
-# In[14]:
+# In[110]:
 
 
 #creating directory and download the data file 
 fetch_housing_data()
 
 
-# In[15]:
+# In[111]:
 
 
 import pandas as pd
@@ -50,7 +50,7 @@ def load_housing_data(housing_path=HOUSING_PATH):
 
 # ### Exploratory the  data 
 
-# In[16]:
+# In[112]:
 
 
 # read our dataframe as housing
@@ -59,7 +59,7 @@ housing = load_housing_data()
 housing.head()
 
 
-# In[17]:
+# In[113]:
 
 
 # quick descreption of the data 
@@ -70,21 +70,21 @@ housing.info()
 # 
 # > just ocean_proximity not float
 
-# In[18]:
+# In[114]:
 
 
 # about ocean_proximity's values
 housing['ocean_proximity'].value_counts()
 
 
-# In[19]:
+# In[115]:
 
 
 # summarty of numerical attributes
 housing.describe()
 
 
-# In[20]:
+# In[116]:
 
 
 # quick exploratory of the data
@@ -95,7 +95,7 @@ housing.hist(bins = 50, figsize = (20,15));
 jtplot.style()
 
 
-# In[21]:
+# In[117]:
 
 
 # creating a test set 
@@ -106,7 +106,7 @@ train_set, test_set = train_test_split(housing, test_size = 0.2, random_state=42
 
 # **Creating median income categories**
 
-# In[22]:
+# In[118]:
 
 
 import numpy as np 
@@ -115,7 +115,7 @@ housing['income_cat'] = pd.cut(housing['median_income'],
                               labels=[1, 2, 3, 4, 5])
 
 
-# In[23]:
+# In[119]:
 
 
 plt.hist(housing['income_cat'])
@@ -124,7 +124,7 @@ plt.title('income categories')
 
 # **now we can do stratified sampling**
 
-# In[24]:
+# In[120]:
 
 
 from sklearn.model_selection import StratifiedShuffleSplit
@@ -134,14 +134,14 @@ for train_index, test_index in split.split(housing, housing['income_cat']):
     strat_test_set = housing.loc[test_index]
 
 
-# In[25]:
+# In[121]:
 
 
 # proportion of each category in incomes
 strat_test_set['income_cat'].value_counts() / len(strat_test_set)
 
 
-# In[26]:
+# In[122]:
 
 
 # remove categories 
@@ -154,14 +154,14 @@ for set_ in (strat_train_set, strat_test_set):
 # **Discvoer and visualize The data**
 # 
 
-# In[27]:
+# In[123]:
 
 
 #but test set aside 
 housing = strat_train_set.copy()
 
 
-# In[28]:
+# In[124]:
 
 
 housing.plot(kind = 'scatter', x = 'longitude', y='latitude', alpha=0.1);
@@ -169,7 +169,7 @@ housing.plot(kind = 'scatter', x = 'longitude', y='latitude', alpha=0.1);
 
 # **add housing price and the population features to above scatter will give us more useful insights**
 
-# In[29]:
+# In[125]:
 
 
 housing.plot(kind='scatter', x='longitude', y='latitude', alpha =0.4,
@@ -185,13 +185,13 @@ plt.legend();
 
 #   > **looking for correlations** 
 
-# In[30]:
+# In[126]:
 
 
 corr_matrix = housing.corr()
 
 
-# In[32]:
+# In[127]:
 
 
 corr_matrix['median_house_value'].sort_values(ascending=True)
@@ -201,13 +201,13 @@ corr_matrix['median_house_value'].sort_values(ascending=True)
 # **in other words: when income incrase the house values incrase**
 # 
 
-# In[38]:
+# In[128]:
 
 
 housing.plot(kind='scatter', x='median_house_value', y='median_income', alpha=0.8, figsize=(10,7));
 
 
-# In[46]:
+# In[129]:
 
 
 from pandas.plotting import scatter_matrix
@@ -221,7 +221,7 @@ scatter_matrix(housing[attributes], figsize=(12,8));
 
 # > **Will Try some attribute combinations**
 
-# In[54]:
+# In[130]:
 
 
 # number of rooms per house hold
@@ -235,7 +235,7 @@ housing['population_per_household'] = housing['population']/housing['households'
 # **lets look at the correlations again** 
 # 
 
-# In[56]:
+# In[131]:
 
 
 corr_matrix = housing.corr()
@@ -247,7 +247,7 @@ corr_matrix['median_house_value'].sort_values(ascending=True)
 
 # <br/>**sepearte predictors and lables**
 
-# In[60]:
+# In[132]:
 
 
 housing = strat_train_set.drop(['median_house_value'],axis=1)
@@ -258,7 +258,7 @@ housing_lables = strat_train_set['median_house_value'].copy()
 
 # **fill the missing data in total_bedrooms with the median**
 
-# In[62]:
+# In[133]:
 
 
 from sklearn.impute import SimpleImputer
@@ -267,26 +267,146 @@ imputer = SimpleImputer(strategy='median')
 
 # **exclude categorical attributes to compute the median** 
 
-# In[63]:
+# In[134]:
 
 
 housing_num = housing.drop('ocean_proximity', axis=1)
 
 
-# In[64]:
+# In[135]:
 
 
 imputer.fit(housing_num)
 
 
-# In[68]:
+# In[136]:
 
 
 # median of all features
 imputer.statistics_
 
 
-# to continiou
+# **daeling with categorical feature**
+
+# In[137]:
+
+
+housing_cat = housing[['ocean_proximity']]
+housing_cat.value_counts()
+
+
+# **convert text to numbers**
+
+# In[138]:
+
+
+from sklearn.preprocessing import OneHotEncoder
+cat_encoder = OneHotEncoder()
+housing_cat_encoded = cat_encoder.fit_transform(housing_cat)
+housing_cat_encoded.toarray()
+
+
+# In[139]:
+
+
+cat_encoder.categories_
+
+
+# ### Feature scalling 
+
+# >**this below code copied from hands on machine learning [book by ageron]**
+
+# **custom Transformer to add extra attributes**
+
+# In[140]:
+
+
+from sklearn.base import BaseEstimator, TransformerMixin
+
+# column index
+col_names = "total_rooms", "total_bedrooms", "population", "households"
+rooms_ix, bedrooms_ix, population_ix, households_ix = [
+    housing.columns.get_loc(c) for c in col_names] # get the column indices
+
+class CombinedAttributesAdder(BaseEstimator, TransformerMixin):
+    def __init__(self, add_bedrooms_per_room=True): # no *args or **kargs
+        self.add_bedrooms_per_room = add_bedrooms_per_room
+    def fit(self, X, y=None):
+        return self  # nothing else to do
+    def transform(self, X):
+        rooms_per_household = X[:, rooms_ix] / X[:, households_ix]
+        population_per_household = X[:, population_ix] / X[:, households_ix]
+        if self.add_bedrooms_per_room:
+            bedrooms_per_room = X[:, bedrooms_ix] / X[:, rooms_ix]
+            return np.c_[X, rooms_per_household, population_per_household,
+                         bedrooms_per_room]
+        else:
+            return np.c_[X, rooms_per_household, population_per_household]
+
+attr_adder = CombinedAttributesAdder(add_bedrooms_per_room=False)
+housing_extra_attribs = attr_adder.transform(housing.values)
+
+
+# **recover The data frame**
+
+# In[141]:
+
+
+housing_extra_attribs = pd.DataFrame(
+    housing_extra_attribs,
+    columns=list(housing.columns)+["rooms_per_household", "population_per_household"],
+    index=housing.index)
+housing_extra_attribs.head()
+
+
+# **Transformation Pipelines**
+
+# In[142]:
+
+
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
+num_pipeline = Pipeline([
+        ('imputer', SimpleImputer(strategy="median")),
+        ('attribs_adder', CombinedAttributesAdder()),
+        ('std_scaler', StandardScaler()),
+    ])
+
+housing_num_tr = num_pipeline.fit_transform(housing_num)
+
+
+# In[143]:
+
+
+housing_num_tr
+
+
+# **apply our transformations to the data**
+
+# In[144]:
+
+
+from sklearn.compose import ColumnTransformer
+num_attribs = list(housing_num)
+cat_attribs = ['ocean_proximity']
+
+
+# In[145]:
+
+
+
+full_pipline = ColumnTransformer([
+    ('num', num_pipeline, num_attribs),
+    ('cat', OneHotEncodere(), cat_attribst)
+])
+
+
+# In[ ]:
+
+
+
+
 
 # In[ ]:
 
