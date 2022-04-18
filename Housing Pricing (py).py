@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[108]:
+# <h1>Table of Contents<span class="tocSkip"></span></h1>
+# <div class="toc"><ul class="toc-item"><li><span><a href="#Exploratory-the--data" data-toc-modified-id="Exploratory-the--data-1"><span class="toc-item-num">1&nbsp;&nbsp;</span>Exploratory the  data</a></span></li><li><span><a href="#Explonatory-the-data" data-toc-modified-id="Explonatory-the-data-2"><span class="toc-item-num">2&nbsp;&nbsp;</span>Explonatory the data</a></span></li><li><span><a href="#Data-Cleaning" data-toc-modified-id="Data-Cleaning-3"><span class="toc-item-num">3&nbsp;&nbsp;</span>Data Cleaning</a></span></li><li><span><a href="#Feature-scalling" data-toc-modified-id="Feature-scalling-4"><span class="toc-item-num">4&nbsp;&nbsp;</span>Feature scalling</a></span></li><li><span><a href="#Select-and-Train-The-model" data-toc-modified-id="Select-and-Train-The-model-5"><span class="toc-item-num">5&nbsp;&nbsp;</span>Select and Train The model</a></span></li><li><span><a href="#Fine-Tune-our-model" data-toc-modified-id="Fine-Tune-our-model-6"><span class="toc-item-num">6&nbsp;&nbsp;</span>Fine-Tune our model</a></span></li></ul></div>
+
+# In[100]:
 
 
 import os
@@ -13,7 +16,7 @@ import tarfile
 
 # **defining the data's place**
 
-# In[109]:
+# In[101]:
 
 
 
@@ -31,14 +34,14 @@ def fetch_housing_data(housing_url=HOUSING_URL, housing_path=HOUSING_PATH):
     housing_tgz.close()
 
 
-# In[110]:
+# In[102]:
 
 
 #creating directory and download the data file 
 fetch_housing_data()
 
 
-# In[111]:
+# In[103]:
 
 
 import pandas as pd
@@ -50,7 +53,7 @@ def load_housing_data(housing_path=HOUSING_PATH):
 
 # ### Exploratory the  data 
 
-# In[112]:
+# In[104]:
 
 
 # read our dataframe as housing
@@ -59,7 +62,7 @@ housing = load_housing_data()
 housing.head()
 
 
-# In[113]:
+# In[105]:
 
 
 # quick descreption of the data 
@@ -70,21 +73,21 @@ housing.info()
 # 
 # > just ocean_proximity not float
 
-# In[114]:
+# In[106]:
 
 
 # about ocean_proximity's values
 housing['ocean_proximity'].value_counts()
 
 
-# In[115]:
+# In[107]:
 
 
 # summarty of numerical attributes
 housing.describe()
 
 
-# In[116]:
+# In[108]:
 
 
 # quick exploratory of the data
@@ -95,7 +98,7 @@ housing.hist(bins = 50, figsize = (20,15));
 jtplot.style()
 
 
-# In[117]:
+# In[109]:
 
 
 # creating a test set 
@@ -106,7 +109,7 @@ train_set, test_set = train_test_split(housing, test_size = 0.2, random_state=42
 
 # **Creating median income categories**
 
-# In[118]:
+# In[110]:
 
 
 import numpy as np 
@@ -115,7 +118,7 @@ housing['income_cat'] = pd.cut(housing['median_income'],
                               labels=[1, 2, 3, 4, 5])
 
 
-# In[119]:
+# In[111]:
 
 
 plt.hist(housing['income_cat'])
@@ -124,7 +127,7 @@ plt.title('income categories')
 
 # **now we can do stratified sampling**
 
-# In[120]:
+# In[112]:
 
 
 from sklearn.model_selection import StratifiedShuffleSplit
@@ -134,14 +137,14 @@ for train_index, test_index in split.split(housing, housing['income_cat']):
     strat_test_set = housing.loc[test_index]
 
 
-# In[121]:
+# In[113]:
 
 
 # proportion of each category in incomes
 strat_test_set['income_cat'].value_counts() / len(strat_test_set)
 
 
-# In[122]:
+# In[114]:
 
 
 # remove categories 
@@ -154,14 +157,14 @@ for set_ in (strat_train_set, strat_test_set):
 # **Discvoer and visualize The data**
 # 
 
-# In[123]:
+# In[115]:
 
 
 #but test set aside 
 housing = strat_train_set.copy()
 
 
-# In[124]:
+# In[116]:
 
 
 housing.plot(kind = 'scatter', x = 'longitude', y='latitude', alpha=0.1);
@@ -169,7 +172,7 @@ housing.plot(kind = 'scatter', x = 'longitude', y='latitude', alpha=0.1);
 
 # **add housing price and the population features to above scatter will give us more useful insights**
 
-# In[125]:
+# In[117]:
 
 
 housing.plot(kind='scatter', x='longitude', y='latitude', alpha =0.4,
@@ -185,13 +188,13 @@ plt.legend();
 
 #   > **looking for correlations** 
 
-# In[126]:
+# In[118]:
 
 
 corr_matrix = housing.corr()
 
 
-# In[127]:
+# In[119]:
 
 
 corr_matrix['median_house_value'].sort_values(ascending=True)
@@ -201,13 +204,13 @@ corr_matrix['median_house_value'].sort_values(ascending=True)
 # **in other words: when income incrase the house values incrase**
 # 
 
-# In[128]:
+# In[120]:
 
 
 housing.plot(kind='scatter', x='median_house_value', y='median_income', alpha=0.8, figsize=(10,7));
 
 
-# In[129]:
+# In[121]:
 
 
 from pandas.plotting import scatter_matrix
@@ -221,7 +224,7 @@ scatter_matrix(housing[attributes], figsize=(12,8));
 
 # > **Will Try some attribute combinations**
 
-# In[130]:
+# In[122]:
 
 
 # number of rooms per house hold
@@ -235,7 +238,7 @@ housing['population_per_household'] = housing['population']/housing['households'
 # **lets look at the correlations again** 
 # 
 
-# In[131]:
+# In[123]:
 
 
 corr_matrix = housing.corr()
@@ -247,7 +250,7 @@ corr_matrix['median_house_value'].sort_values(ascending=True)
 
 # <br/>**sepearte predictors and lables**
 
-# In[132]:
+# In[124]:
 
 
 housing = strat_train_set.drop(['median_house_value'],axis=1)
@@ -258,7 +261,7 @@ housing_lables = strat_train_set['median_house_value'].copy()
 
 # **fill the missing data in total_bedrooms with the median**
 
-# In[133]:
+# In[125]:
 
 
 from sklearn.impute import SimpleImputer
@@ -267,19 +270,19 @@ imputer = SimpleImputer(strategy='median')
 
 # **exclude categorical attributes to compute the median** 
 
-# In[134]:
+# In[126]:
 
 
 housing_num = housing.drop('ocean_proximity', axis=1)
 
 
-# In[135]:
+# In[127]:
 
 
 imputer.fit(housing_num)
 
 
-# In[136]:
+# In[128]:
 
 
 # median of all features
@@ -288,7 +291,7 @@ imputer.statistics_
 
 # **daeling with categorical feature**
 
-# In[137]:
+# In[129]:
 
 
 housing_cat = housing[['ocean_proximity']]
@@ -297,7 +300,7 @@ housing_cat.value_counts()
 
 # **convert text to numbers**
 
-# In[138]:
+# In[130]:
 
 
 from sklearn.preprocessing import OneHotEncoder
@@ -306,7 +309,7 @@ housing_cat_encoded = cat_encoder.fit_transform(housing_cat)
 housing_cat_encoded.toarray()
 
 
-# In[139]:
+# In[131]:
 
 
 cat_encoder.categories_
@@ -318,7 +321,7 @@ cat_encoder.categories_
 
 # **custom Transformer to add extra attributes**
 
-# In[140]:
+# In[132]:
 
 
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -349,7 +352,7 @@ housing_extra_attribs = attr_adder.transform(housing.values)
 
 # **recover The data frame**
 
-# In[141]:
+# In[133]:
 
 
 housing_extra_attribs = pd.DataFrame(
@@ -361,7 +364,7 @@ housing_extra_attribs.head()
 
 # **Transformation Pipelines**
 
-# In[142]:
+# In[134]:
 
 
 from sklearn.pipeline import Pipeline
@@ -376,7 +379,7 @@ num_pipeline = Pipeline([
 housing_num_tr = num_pipeline.fit_transform(housing_num)
 
 
-# In[143]:
+# In[135]:
 
 
 housing_num_tr
@@ -384,23 +387,157 @@ housing_num_tr
 
 # **apply our transformations to the data**
 
-# In[144]:
+# In[136]:
 
 
 from sklearn.compose import ColumnTransformer
-num_attribs = list(housing_num)
-cat_attribs = ['ocean_proximity']
 
+num_attribs = list(housing_num)
+cat_attribs = ["ocean_proximity"]
+
+full_pipeline = ColumnTransformer([
+        ("num", num_pipeline, num_attribs),
+        ("cat", OneHotEncoder(), cat_attribs),
+    ])
+
+housing_prepared = full_pipeline.fit_transform(housing)
+
+
+# ### Select and Train The model 
+
+# **First Test linear regression**
+
+# In[137]:
+
+
+from sklearn.linear_model import LinearRegression
+lr_mod = LinearRegression()
+lr_mod.fit(housing_prepared, housing_lables)
+
+
+# **try the model in very small sample**
+
+# In[138]:
+
+
+some_data = housing.iloc[:5]
+some_labels = housing_lables.iloc[:5]
+some_data_prepared = full_pipeline.transform(some_data)
+print('predictions : ', lr_mod.predict(some_data_prepared))
+
+
+# In[139]:
+
+
+print('the labels predicted', list(some_labels))
+
+
+# **mesure model error using rmse on the hole data**
+
+# In[140]:
+
+
+from sklearn.metrics import mean_squared_error
+housing_prediection = lr_mod.predict(housing_prepared)
+lr_rmse = mean_squared_error(housing_lables, housing_prediection)
+calc_rmse = np.sqrt(lr_rmse)
+calc_rmse
+
+
+# **Trying Desicion Tree Model**
+
+# In[141]:
+
+
+from sklearn.tree import DecisionTreeRegressor
+tree_reg = DecisionTreeRegressor()
+tree_reg.fit(housing_prepared, housing_lables)
+housing_prediection = tree_reg.predict(housing_prepared)
+tree_mse = mean_squared_error(housing_lables, housing_prediection)
+tree_rmse = np.sqrt(tree_mse)
+tree_rmse
+
+
+# **there is 0.0 error can be perfect model ! let's try it on the test set**
+
+# In[142]:
+
+
+from sklearn.model_selection import cross_val_score
+scores = cross_val_score(tree_reg, housing_prepared, housing_lables, 
+                        scoring ='neg_mean_squared_error', cv = 10)
+tree_rmse_scores = np.sqrt(-scores)
+
+
+# **let's look at the result**
+
+# In[143]:
+
+
+def display_scores(scores) : 
+    print('scores', scores)
+    print('mean',scores.mean())
+    print('std', scores.std())
+
+
+# In[144]:
+
+
+display_scores(tree_rmse_scores)
+
+
+# **compute the same score for the linear regression model**
 
 # In[145]:
 
 
+linear_cross = cross_val_score(lr_mod, housing_prepared, housing_lables,
+                              scoring='neg_mean_squared_error', cv = 10)
+lr_rmse_scores = np.sqrt(-linear_cross)
+display_scores(lr_rmse_scores)
 
-full_pipline = ColumnTransformer([
-    ('num', num_pipeline, num_attribs),
-    ('cat', OneHotEncodere(), cat_attribst)
-])
 
+# **obiviously linear regression model doing better than Desicion Tree model**
+
+# > **let's try  RandomForestRegressor**
+
+# In[146]:
+
+
+from sklearn.ensemble import RandomForestRegressor
+forest_reg = RandomForestRegressor()
+forest_reg.fit(housing_prepared, housing_lables)
+
+
+# In[147]:
+
+
+housing_prediction = forest_reg.predict(housing_prepared)
+forest_mse = mean_squared_error(housing_lables, housing_prediction)
+forest_rmse = np.sqrt(forest_mse)
+forest_rmse
+
+
+# In[149]:
+
+
+from sklearn.model_selection import cross_val_score
+
+forest_scores = cross_val_score(forest_reg, housing_prepared, housing_lables,
+                                scoring="neg_mean_squared_error", cv=10)
+forest_rmse_scores = np.sqrt(-forest_scores)
+
+
+# In[150]:
+
+
+display_scores(forest_rmse_scores)
+
+
+# **looks like rondom forest regressor is promising than to other model**
+# 
+
+# ### Fine-Tune our model 
 
 # In[ ]:
 
@@ -413,3 +550,5 @@ full_pipline = ColumnTransformer([
 
 
 
+
+# 
