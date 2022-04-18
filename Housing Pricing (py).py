@@ -2,9 +2,9 @@
 # coding: utf-8
 
 # <h1>Table of Contents<span class="tocSkip"></span></h1>
-# <div class="toc"><ul class="toc-item"><li><span><a href="#Exploratory-the--data" data-toc-modified-id="Exploratory-the--data-1"><span class="toc-item-num">1&nbsp;&nbsp;</span>Exploratory the  data</a></span></li><li><span><a href="#Explonatory-the-data" data-toc-modified-id="Explonatory-the-data-2"><span class="toc-item-num">2&nbsp;&nbsp;</span>Explonatory the data</a></span></li><li><span><a href="#Data-Cleaning" data-toc-modified-id="Data-Cleaning-3"><span class="toc-item-num">3&nbsp;&nbsp;</span>Data Cleaning</a></span></li><li><span><a href="#Feature-scalling" data-toc-modified-id="Feature-scalling-4"><span class="toc-item-num">4&nbsp;&nbsp;</span>Feature scalling</a></span></li><li><span><a href="#Select-and-Train-The-model" data-toc-modified-id="Select-and-Train-The-model-5"><span class="toc-item-num">5&nbsp;&nbsp;</span>Select and Train The model</a></span></li><li><span><a href="#Fine-Tune-our-model" data-toc-modified-id="Fine-Tune-our-model-6"><span class="toc-item-num">6&nbsp;&nbsp;</span>Fine-Tune our model</a></span></li></ul></div>
+# <div class="toc"><ul class="toc-item"><li><span><a href="#Exploratory-the--data" data-toc-modified-id="Exploratory-the--data-1"><span class="toc-item-num">1&nbsp;&nbsp;</span>Exploratory the  data</a></span></li><li><span><a href="#Explonatory-the-data" data-toc-modified-id="Explonatory-the-data-2"><span class="toc-item-num">2&nbsp;&nbsp;</span>Explonatory the data</a></span></li><li><span><a href="#Data-Cleaning" data-toc-modified-id="Data-Cleaning-3"><span class="toc-item-num">3&nbsp;&nbsp;</span>Data Cleaning</a></span></li><li><span><a href="#Feature-scalling" data-toc-modified-id="Feature-scalling-4"><span class="toc-item-num">4&nbsp;&nbsp;</span>Feature scalling</a></span></li><li><span><a href="#Select-and-Train-The-model" data-toc-modified-id="Select-and-Train-The-model-5"><span class="toc-item-num">5&nbsp;&nbsp;</span>Select and Train The model</a></span></li><li><span><a href="#Fine-Tune-our-model" data-toc-modified-id="Fine-Tune-our-model-6"><span class="toc-item-num">6&nbsp;&nbsp;</span>Fine-Tune our model</a></span></li><li><span><a href="#Analyze-the-Best-Models-and-Their-Errors" data-toc-modified-id="Analyze-the-Best-Models-and-Their-Errors-7"><span class="toc-item-num">7&nbsp;&nbsp;</span>Analyze the Best Models and Their Errors</a></span></li><li><span><a href="#Evaluate-the-final-model" data-toc-modified-id="Evaluate-the-final-model-8"><span class="toc-item-num">8&nbsp;&nbsp;</span>Evaluate the final model</a></span></li></ul></div>
 
-# In[100]:
+# In[1]:
 
 
 import os
@@ -16,7 +16,7 @@ import tarfile
 
 # **defining the data's place**
 
-# In[101]:
+# In[2]:
 
 
 
@@ -34,14 +34,14 @@ def fetch_housing_data(housing_url=HOUSING_URL, housing_path=HOUSING_PATH):
     housing_tgz.close()
 
 
-# In[102]:
+# In[3]:
 
 
 #creating directory and download the data file 
 fetch_housing_data()
 
 
-# In[103]:
+# In[4]:
 
 
 import pandas as pd
@@ -53,7 +53,7 @@ def load_housing_data(housing_path=HOUSING_PATH):
 
 # ### Exploratory the  data 
 
-# In[104]:
+# In[5]:
 
 
 # read our dataframe as housing
@@ -62,7 +62,7 @@ housing = load_housing_data()
 housing.head()
 
 
-# In[105]:
+# In[6]:
 
 
 # quick descreption of the data 
@@ -73,21 +73,21 @@ housing.info()
 # 
 # > just ocean_proximity not float
 
-# In[106]:
+# In[7]:
 
 
 # about ocean_proximity's values
 housing['ocean_proximity'].value_counts()
 
 
-# In[107]:
+# In[8]:
 
 
 # summarty of numerical attributes
 housing.describe()
 
 
-# In[108]:
+# In[9]:
 
 
 # quick exploratory of the data
@@ -98,7 +98,7 @@ housing.hist(bins = 50, figsize = (20,15));
 jtplot.style()
 
 
-# In[109]:
+# In[10]:
 
 
 # creating a test set 
@@ -109,7 +109,7 @@ train_set, test_set = train_test_split(housing, test_size = 0.2, random_state=42
 
 # **Creating median income categories**
 
-# In[110]:
+# In[11]:
 
 
 import numpy as np 
@@ -118,7 +118,7 @@ housing['income_cat'] = pd.cut(housing['median_income'],
                               labels=[1, 2, 3, 4, 5])
 
 
-# In[111]:
+# In[12]:
 
 
 plt.hist(housing['income_cat'])
@@ -127,7 +127,7 @@ plt.title('income categories')
 
 # **now we can do stratified sampling**
 
-# In[112]:
+# In[13]:
 
 
 from sklearn.model_selection import StratifiedShuffleSplit
@@ -137,14 +137,14 @@ for train_index, test_index in split.split(housing, housing['income_cat']):
     strat_test_set = housing.loc[test_index]
 
 
-# In[113]:
+# In[14]:
 
 
 # proportion of each category in incomes
 strat_test_set['income_cat'].value_counts() / len(strat_test_set)
 
 
-# In[114]:
+# In[15]:
 
 
 # remove categories 
@@ -157,14 +157,14 @@ for set_ in (strat_train_set, strat_test_set):
 # **Discvoer and visualize The data**
 # 
 
-# In[115]:
+# In[16]:
 
 
 #but test set aside 
 housing = strat_train_set.copy()
 
 
-# In[116]:
+# In[17]:
 
 
 housing.plot(kind = 'scatter', x = 'longitude', y='latitude', alpha=0.1);
@@ -172,7 +172,7 @@ housing.plot(kind = 'scatter', x = 'longitude', y='latitude', alpha=0.1);
 
 # **add housing price and the population features to above scatter will give us more useful insights**
 
-# In[117]:
+# In[18]:
 
 
 housing.plot(kind='scatter', x='longitude', y='latitude', alpha =0.4,
@@ -188,13 +188,13 @@ plt.legend();
 
 #   > **looking for correlations** 
 
-# In[118]:
+# In[19]:
 
 
 corr_matrix = housing.corr()
 
 
-# In[119]:
+# In[20]:
 
 
 corr_matrix['median_house_value'].sort_values(ascending=True)
@@ -204,13 +204,13 @@ corr_matrix['median_house_value'].sort_values(ascending=True)
 # **in other words: when income incrase the house values incrase**
 # 
 
-# In[120]:
+# In[21]:
 
 
 housing.plot(kind='scatter', x='median_house_value', y='median_income', alpha=0.8, figsize=(10,7));
 
 
-# In[121]:
+# In[22]:
 
 
 from pandas.plotting import scatter_matrix
@@ -224,7 +224,7 @@ scatter_matrix(housing[attributes], figsize=(12,8));
 
 # > **Will Try some attribute combinations**
 
-# In[122]:
+# In[23]:
 
 
 # number of rooms per house hold
@@ -238,7 +238,7 @@ housing['population_per_household'] = housing['population']/housing['households'
 # **lets look at the correlations again** 
 # 
 
-# In[123]:
+# In[24]:
 
 
 corr_matrix = housing.corr()
@@ -250,7 +250,7 @@ corr_matrix['median_house_value'].sort_values(ascending=True)
 
 # <br/>**sepearte predictors and lables**
 
-# In[124]:
+# In[25]:
 
 
 housing = strat_train_set.drop(['median_house_value'],axis=1)
@@ -261,7 +261,7 @@ housing_lables = strat_train_set['median_house_value'].copy()
 
 # **fill the missing data in total_bedrooms with the median**
 
-# In[125]:
+# In[26]:
 
 
 from sklearn.impute import SimpleImputer
@@ -270,19 +270,19 @@ imputer = SimpleImputer(strategy='median')
 
 # **exclude categorical attributes to compute the median** 
 
-# In[126]:
+# In[27]:
 
 
 housing_num = housing.drop('ocean_proximity', axis=1)
 
 
-# In[127]:
+# In[28]:
 
 
 imputer.fit(housing_num)
 
 
-# In[128]:
+# In[29]:
 
 
 # median of all features
@@ -291,7 +291,7 @@ imputer.statistics_
 
 # **daeling with categorical feature**
 
-# In[129]:
+# In[30]:
 
 
 housing_cat = housing[['ocean_proximity']]
@@ -300,7 +300,7 @@ housing_cat.value_counts()
 
 # **convert text to numbers**
 
-# In[130]:
+# In[31]:
 
 
 from sklearn.preprocessing import OneHotEncoder
@@ -309,7 +309,7 @@ housing_cat_encoded = cat_encoder.fit_transform(housing_cat)
 housing_cat_encoded.toarray()
 
 
-# In[131]:
+# In[32]:
 
 
 cat_encoder.categories_
@@ -321,7 +321,7 @@ cat_encoder.categories_
 
 # **custom Transformer to add extra attributes**
 
-# In[132]:
+# In[33]:
 
 
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -352,7 +352,7 @@ housing_extra_attribs = attr_adder.transform(housing.values)
 
 # **recover The data frame**
 
-# In[133]:
+# In[34]:
 
 
 housing_extra_attribs = pd.DataFrame(
@@ -364,7 +364,7 @@ housing_extra_attribs.head()
 
 # **Transformation Pipelines**
 
-# In[134]:
+# In[35]:
 
 
 from sklearn.pipeline import Pipeline
@@ -379,7 +379,7 @@ num_pipeline = Pipeline([
 housing_num_tr = num_pipeline.fit_transform(housing_num)
 
 
-# In[135]:
+# In[36]:
 
 
 housing_num_tr
@@ -387,7 +387,7 @@ housing_num_tr
 
 # **apply our transformations to the data**
 
-# In[136]:
+# In[37]:
 
 
 from sklearn.compose import ColumnTransformer
@@ -407,7 +407,7 @@ housing_prepared = full_pipeline.fit_transform(housing)
 
 # **First Test linear regression**
 
-# In[137]:
+# In[38]:
 
 
 from sklearn.linear_model import LinearRegression
@@ -417,7 +417,7 @@ lr_mod.fit(housing_prepared, housing_lables)
 
 # **try the model in very small sample**
 
-# In[138]:
+# In[39]:
 
 
 some_data = housing.iloc[:5]
@@ -426,7 +426,7 @@ some_data_prepared = full_pipeline.transform(some_data)
 print('predictions : ', lr_mod.predict(some_data_prepared))
 
 
-# In[139]:
+# In[40]:
 
 
 print('the labels predicted', list(some_labels))
@@ -434,7 +434,7 @@ print('the labels predicted', list(some_labels))
 
 # **mesure model error using rmse on the hole data**
 
-# In[140]:
+# In[41]:
 
 
 from sklearn.metrics import mean_squared_error
@@ -446,7 +446,7 @@ calc_rmse
 
 # **Trying Desicion Tree Model**
 
-# In[141]:
+# In[42]:
 
 
 from sklearn.tree import DecisionTreeRegressor
@@ -460,7 +460,7 @@ tree_rmse
 
 # **there is 0.0 error can be perfect model ! let's try it on the test set**
 
-# In[142]:
+# In[43]:
 
 
 from sklearn.model_selection import cross_val_score
@@ -471,7 +471,7 @@ tree_rmse_scores = np.sqrt(-scores)
 
 # **let's look at the result**
 
-# In[143]:
+# In[44]:
 
 
 def display_scores(scores) : 
@@ -480,7 +480,7 @@ def display_scores(scores) :
     print('std', scores.std())
 
 
-# In[144]:
+# In[45]:
 
 
 display_scores(tree_rmse_scores)
@@ -488,7 +488,7 @@ display_scores(tree_rmse_scores)
 
 # **compute the same score for the linear regression model**
 
-# In[145]:
+# In[46]:
 
 
 linear_cross = cross_val_score(lr_mod, housing_prepared, housing_lables,
@@ -501,7 +501,7 @@ display_scores(lr_rmse_scores)
 
 # > **let's try  RandomForestRegressor**
 
-# In[146]:
+# In[47]:
 
 
 from sklearn.ensemble import RandomForestRegressor
@@ -509,7 +509,7 @@ forest_reg = RandomForestRegressor()
 forest_reg.fit(housing_prepared, housing_lables)
 
 
-# In[147]:
+# In[48]:
 
 
 housing_prediction = forest_reg.predict(housing_prepared)
@@ -518,7 +518,7 @@ forest_rmse = np.sqrt(forest_mse)
 forest_rmse
 
 
-# In[149]:
+# In[49]:
 
 
 from sklearn.model_selection import cross_val_score
@@ -528,7 +528,7 @@ forest_scores = cross_val_score(forest_reg, housing_prepared, housing_lables,
 forest_rmse_scores = np.sqrt(-forest_scores)
 
 
-# In[150]:
+# In[50]:
 
 
 display_scores(forest_rmse_scores)
@@ -539,10 +539,92 @@ display_scores(forest_rmse_scores)
 
 # ### Fine-Tune our model 
 
-# In[ ]:
+# **Search for the best combination of hyperparamaeter values for the RandomForestRegression model**
+
+# In[59]:
 
 
+from sklearn.model_selection import GridSearchCV
 
+param_grid = [
+    # try 12 (3×4) combinations of hyperparameters
+    {'n_estimators': [3, 10, 30], 'max_features': [2, 4, 6, 8]},
+    # then try 6 (2×3) combinations with bootstrap set as False
+    {'bootstrap': [False], 'n_estimators': [3, 10], 'max_features': [2, 3, 4]},
+  ]
+
+forest_reg = RandomForestRegressor(random_state=42)
+# train across 5 folds, that's a total of (12+6)*5=90 rounds of training 
+grid_search = GridSearchCV(forest_reg, param_grid, cv=5,
+                           scoring='neg_mean_squared_error',
+                           return_train_score=True)
+grid_search.fit(housing_prepared, housing_lables
+               )
+
+
+# In[60]:
+
+
+print('best parameters for the model is \n', grid_search.best_params_)
+
+
+# In[61]:
+
+
+grid_search.best_estimator_
+
+
+# **evaluation score (best rmse score)**
+
+# In[62]:
+
+
+curves = grid_search.cv_results_
+for mean_score, params in zip(curves['mean_test_score'], curves['params']) : 
+    print(np.sqrt(-mean_score), params)
+
+
+# ### Analyze the Best Models and Their Errors
+
+# In[66]:
+
+
+feature_importances = grid_search.best_estimator_.feature_importances_
+feature_importances
+
+
+# In[67]:
+
+
+extra_attribs = ["rooms_per_hhold", "pop_per_hhold", "bedrooms_per_room"]
+#cat_encoder = cat_pipeline.named_steps["cat_encoder"] # old solution
+cat_encoder = full_pipeline.named_transformers_["cat"]
+cat_one_hot_attribs = list(cat_encoder.categories_[0])
+attributes = num_attribs + extra_attribs + cat_one_hot_attribs
+sorted(zip(feature_importances, attributes), reverse=True)
+
+
+# ### Evaluate the final model
+
+# In[70]:
+
+
+final_model = grid_search.best_estimator_
+
+X_test = strat_test_set.drop("median_house_value", axis=1)
+y_test = strat_test_set["median_house_value"].copy()
+
+X_test_prepared = full_pipeline.transform(X_test)
+final_predictions = final_model.predict(X_test_prepared)
+
+final_mse = mean_squared_error(y_test, final_predictions)
+final_rmse = np.sqrt(final_mse)
+
+
+# In[71]:
+
+
+final_rmse
 
 
 # In[ ]:
